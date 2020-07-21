@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 const HeroBasic = require('./models/HeroBasic');
 const PlanTeam = require('./models/PlanTeam');
 const PlayerMmr = require('./models/PlayerMmr');
+const Comp = require('./models/Comp');
 
 
 
@@ -50,6 +51,7 @@ app.use(bodyParser.json());
 
 app.use('/plan-team', require('./routes/plan-team'));
 app.use('/player', require('./routes/player'));
+app.use('/comp', require('./routes/comp'));
 
 mongoose
 .connect(process.env.DB_URL, {

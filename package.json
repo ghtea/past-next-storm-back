@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "heroes-talents": "git+https://git@github.com/heroespatchnotes/heroes-talents.git",
     "mongoose": "^5.9.21"
   }
 }
