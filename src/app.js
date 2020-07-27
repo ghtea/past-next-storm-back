@@ -41,6 +41,13 @@ app.use( (req, res, next) => {
 
 app.use(cors());
 
+/*
+app.all('/*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+});
+*/
+
 //const corsOptions = {credentials: true, origin: true}
 //app.use(cors(corsOptions));
 
@@ -52,6 +59,11 @@ app.use(bodyParser.json());
 app.use('/plan-team', require('./routes/plan-team'));
 app.use('/player', require('./routes/player'));
 app.use('/comp', require('./routes/comp'));
+
+app.use('/hero-basic', require('./routes/hero-basic'));
+app.use('/map', require('./routes/map'));
+
+app.use('/auth-local', require('./routes/auth-local'));
 
 mongoose
 .connect(process.env.DB_URL, {

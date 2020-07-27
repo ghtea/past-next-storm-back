@@ -35,6 +35,9 @@ router.post('/', async (req, res, next) => {
           , numberTeams: 0
           , numberGroups: 0
         }
+        
+        , created: Date.now()
+        , accessed: Date.now()
       });
       
     //planTeam.option.region = req.body.region;

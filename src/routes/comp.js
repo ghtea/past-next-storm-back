@@ -23,21 +23,25 @@ router.post('/', async (req, res, next) => {
   
   try {
     
+    const date =  Date.now();
+    
     let tComp = new Comp(
       { 
-        password: req.body.password
-  
+        _id: req.body._id
+        ,password: req.body.password
+        
         ,title: req.body.title
-        ,author: req.body.author
+        //,author: req.body.author
         
-        ,added: req.body.added
-        ,links: req.body.links
-        ,tags: req.body.tags
+        ,created: date
+        ,updated: date
         
+        ,listMap: req.body.listMap
+        ,listTag: req.body.listTag
         ,listPosition:req.body.listPosition
         
         ,rating: req.body.rating
-        ,comments: req.body.comments
+        ,listComment: req.body.listComment
         
       });
       

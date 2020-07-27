@@ -5,7 +5,9 @@ var Schema = mongoose.Schema;
 
 var schemaPosition = new Schema({
   _id: String
-  ,listHero: [String]
+  ,index: Number
+  ,explanation: String
+  ,listIdHero: [String]
 });
 
 
@@ -36,7 +38,10 @@ var schemaCommentRating = new Schema({
 var schemaComment = new Schema({
   _id: String
   ,author: String
+  
+  , language: String
   ,content: String
+  ,link: String
   ,rating: schemaCommentRating
 });
 
@@ -47,21 +52,22 @@ var schemaComp = new Schema({
   _id: String
   ,password: String
   
-  
-  
   ,title: String
-  ,author: String
+  //,author: String
   
-  ,added: Date
-  ,links: [String]
-  ,tags: [String]
+  ,created: Date
+  ,updated: Date
+  ,version: String
   
   ,listPosition:[schemaPosition]
+  ,listMap: [String]
+  ,listTag: [String]
+  
   
   ,rating: schemaRating
-  ,comments: [schemaComment]
+  ,listComment: [schemaComment]
   
-}, { collection: 'cComp', versionKey: false});
+}, { collection: 'collComp', versionKey: false});
 
 
 

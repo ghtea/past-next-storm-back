@@ -17,7 +17,7 @@ var schemaHeroBasic = new Schema({
   
   ,tags: [String]
   
-}, { collection: 'cHeroBasic', versionKey: false});
+}, { collection: 'collHeroBasic', versionKey: false});
 
 module.exports = mongoose.model('HeroBasic', schemaHeroBasic);
 

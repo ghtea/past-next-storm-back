@@ -93,13 +93,16 @@ var schemaPlanTeam = new Schema({
   password: String,
   title: String,
   
+  created: Date,
+  accessed: Date,
+  
   listPlayerEntry: [schemaPlayerEntry],
   
   listResult: [schemaResultTeam],
   
   option: schemaOptionTeam
   
-}, { collection: 'cPlanTeam', versionKey: false});
+}, { collection: 'collPlanTeam', versionKey: false});
 
 
 

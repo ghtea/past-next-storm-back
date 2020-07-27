@@ -86,7 +86,9 @@ router.put('/add', async (req, res, next) => {
     
     ////////////////
     
-  
+    console.log("check here")
+    console.log(idPlanTeam)
+    
     const filter2 = {
       _id: idPlanTeam
       , "listPlayerEntry._id" : {$ne: battletag}  // 이미 목록에 있는 상태라면 건디리지 않는다.
@@ -170,9 +172,11 @@ router.put('/add-roles', async (req, res, next) => {
     let objPlayerRoleGames={};
     objPlayerRoleGames = await readPlayerRoleGames( battletag,  listRegionMain); // read from heroesprofile
     
+    console.log('objPlayerRoleGames');
     console.log(objPlayerRoleGames);
     
     const listPlayerRole = choosePlayerRoles(objPlayerRoleGames);
+    console.log('listPlayerRole');
     console.log(listPlayerRole);
     
     const filter = {
