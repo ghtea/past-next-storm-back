@@ -53,9 +53,9 @@ function decodeToken(token) {
 
 
 exports.jwtMiddleware = async (req, res, next) => {
-    //console.log("hi, i'm jwtMiddleware")
+    console.log("hi, i'm jwtMiddleware")
     const token = req.cookies.access_token;//  access_token 을 읽어옵니다
-    //console.log(token);
+    console.log(token);
     
     if(!token) return next(); // 토큰이 없으면 바로 다음 작업을 진행합니다.
 
@@ -65,9 +65,9 @@ exports.jwtMiddleware = async (req, res, next) => {
       // 토큰 만료일이 하루밖에 안남으면 토큰을 재발급합니다
       if(Date.now() / 1000 - decoded.iat > 60 * 60 * 24) {
         // 하루가 지나면 갱신해준다.
-        const { _id, battletag } = decoded;
+        const { _id, email } = decoded;
         
-        const freshToken = await generateToken({ _id, battletag}, 'User');
+        const freshToken = await generateToken({ _id, email}, 'User');
         
         req.cookie('access_token', freshToken, {
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7days

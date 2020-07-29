@@ -93,7 +93,7 @@ router.post('/register', async (req, res, next) => {
     // 여기까지 에러가 없었으면 성공적으로 아래와 같이 실행!
     
     
-    res.cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7, path: '/' }); // cookie 에 토큰 보내주기
+    res.cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7}); // cookie 에 토큰 보내주기
     res.json(
       {
         _id: tUser._id
@@ -173,14 +173,14 @@ router.post('/login', async (req, res, next) => {
     
     
 
-    console.log(req.cookies.access_token);
+    //console.log(req.cookies.access_token);
     
-    console.log("giving cookie!") 
+    //console.log("giving cookie!") 
     
-    res.append('Set-Cookie', 'foo=bar; Path=/; HttpOnly'); //test
+    //res.append('Set-Cookie', 'foo=bar; Path=/; HttpOnly'); //test
     
-    res.setHeader('Access-Control-Allow-Origin', 'https://ns.avantwing.com');
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); 
+    //res.setHeader('Access-Control-Allow-Origin', 'https://ns.avantwing.com');
+    //res.setHeader('Access-Control-Allow-Credentials', 'true'); 
     
     res.cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }); 
     // cookie 브라우저가 설정하려면 별도의 추가 설정 필요
@@ -239,7 +239,7 @@ router.post('/logout', async (req, res, next) => {
         httpOnly: true
     });
     
-    res.status(204);
+    res.status(204).send("log out")
     
   } catch(error) { next(error) }
   
@@ -253,11 +253,10 @@ router.get('/check', async (req, res, next) => {
   
   try {
     
-    console.log("hello, I'm /check")
+    //console.log("hello, I'm /check")
     //console.log(req);
     
     const { tUser } = req;
-    
     
     
     if(!tUser) {

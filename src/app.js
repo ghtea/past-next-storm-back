@@ -89,6 +89,7 @@ app.use('/hero-basic', require('./routes/hero-basic'));
 app.use('/map', require('./routes/map'));
 
 app.use('/auth-local', require('./routes/auth-local'));
+app.use('/auth-bnet', require('./routes/auth-bnet'));
 
 mongoose
 .connect(process.env.DB_URL, {
