@@ -4,6 +4,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
+import cookieParser from 'cookie-parser';
+
+
+const { jwtMiddleware } = require('./works/auth/token');
 
 const HeroBasic = require('./models/HeroBasic');
 const PlanTeam = require('./models/PlanTeam');
@@ -39,7 +43,26 @@ app.use( (req, res, next) => {
 });
 */
 
-app.use(cors());
+/*
+// https://velog.io/@sonaky47/XML-HttpRequest%EB%A1%9C-CROS-Domain-Cookie%EA%B0%92-%EC%9D%BD%EC%96%B4%EC%98%A4%EA%B8%B0-4tjnn15emy
+app.all('/*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'POST, PUT, GET, DELETE');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
+*/
+
+
+// https://www.zerocho.com/category/NodeJS/post/5e9bf5b18dcb9c001f36b275
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
+
+//app.use(cors());
 
 /*
 app.all('/*', function(req, res, next) {
@@ -55,6 +78,8 @@ app.all('/*', function(req, res, next) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(cookieParser());
+app.use(jwtMiddleware);
 
 app.use('/plan-team', require('./routes/plan-team'));
 app.use('/player', require('./routes/player'));
@@ -88,4 +113,16 @@ app.listen(port, () =>
 /*
 useFindAndModify: false
 https://mongoosejs.com/docs/deprecations.html#findandmodify
+*/
+
+
+/*
+const jwt = require('jsonwebtoken');
+const token = jwt.sign({ foo: 'bar' }, 'secret-key', { expiresIn: '7d' }, (err, token) => {
+    if(err) {
+        console.log(err);
+        return;
+    }
+    console.log(token);
+});
 */
