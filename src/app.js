@@ -14,7 +14,7 @@ const PlanTeam = require('./models/PlanTeam');
 const PlayerMmr = require('./models/PlayerMmr');
 const Comp = require('./models/Comp');
 
-
+const { generateToken, checkToken } = require('./works/auth/token');
 
 dotenv.config({ 
   path: './.env' 
@@ -79,7 +79,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(cookieParser());
-app.use(jwtMiddleware);
+//app.use(jwtMiddleware); // auth-local 에서만 사용하기로 하자
 
 app.use('/plan-team', require('./routes/plan-team'));
 app.use('/player', require('./routes/player'));
