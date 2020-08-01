@@ -8,7 +8,6 @@ import axios from 'axios';
 import session from 'express-session';
 import passport from 'passport';
 import { uuid } from 'uuidv4'; // https://www.npmjs.com/package/uuidv4
-import querystring from 'querystring';  
 
 import User from '../models/User';
 
@@ -22,9 +21,8 @@ const { generateToken, checkToken } = require('../works/auth/token');
 
 var router = express.Router();
 
+router.use(session({ secret: SECRET_KEY, resave: true, saveUninitialized: false, cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } }));
 router.use(passport.initialize());
-router.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: false, cookie: { maxAge: 1000 * 60 * 1 } }));
-
 
 //router.use(passport.session());
 
@@ -50,9 +48,9 @@ passport.serializeUser((user, done) => {
   done(null, user); // tUser 혹은 mongoUser (실질적으로 같다)
 });
 
-// 
+// 중복확인?
 passport.deserializeUser((user, done) => {
-  done(null, null);  // profile인지 User 인지 잘 모르겠지만...
+  done(null, user);  // profile인지 User 인지 잘 모르겠지만...
 });
 
 
@@ -76,20 +74,17 @@ router.get('/callback',
       //const battletag = profile.battletag;
       
       
-      const foundConfirmedUser = await User.findOne({ battletagConfirmed: profile.battletag});
+      await User.findOne({ battletagConfirmed: profile.battletag}, (err, foundConfirmedUser) => {
           
-      // 이미 등록하고 확인까지 받은 유저가 있다면!
-      
-      if (foundConfirmedUser) {
-        const query = querystring.stringify({
-          "situation": "error"
-          ,"message": `'${profile.battletag}'is already in use`
-        });
-        res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
-        return;
-      } 
-    
-      else {
+        // 이미 등록하고 확인까지 받은 유저가 있다면!
+        
+        if (foundConfirmedUser) {
+          const message =  `'${profile.battletag}'is already in use`;
+          res.redirect(`https://ns.avantwing.com?situation=error&message=${message}`);
+          return;
+        } 
+        
+      }) // User.findOne
       
       
       
@@ -98,13 +93,17 @@ router.get('/callback',
       
       if (foundUser) {
         
-        // 유저를 찾고, 배틀태그 등록한 시간도 최근 3분 안이면, 정상적으로 배틀태그 부여, 로그인.
-        if (foundUser.whenBattletagPendingAdded >= (Date.now() - 3*60*1000) ) {
+        // 유저를 찾고, 배틀태그 등록한 시간도 최근 30분 안이면, 정상적으로 배틀태그 부여, 로그인.
+        if (foundUser.whenBattletagPendingAdded >= (Date.now() - 30*60*1000) ) {
         
           const update = {battletagConfirmed: profile.battletag, battletagPending: ""};
           await User.updateOne({battletagPending: profile.battletag }, update);
           
-
+          const updatedUser = {
+            _id: foundUser._id
+            , email: foundUser.email
+            , battletagConfirmed: profile.battletag
+          }
           res.redirect(`https://ns.avantwing.com`);
           return;
           //res.redirect(`/auth-bnet/success`)
@@ -112,42 +111,45 @@ router.get('/callback',
         
         // 유저를 찾앗지만 배틀태그 등록 시간이 너무 예전인 경우, 로그인도 안하고 메시지만 전달
         else {
-          const query = querystring.stringify({
-              "situation": "error"
-              ,"message": `more than 3 mins passed since user applied this battletag`
-          });
-          res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
+          const message =  `more than 30 mins passed since user applied this battletag`;
+          res.redirect(`https://ns.avantwing.com?situation=error&message=${message}`);
           return;
         }
       } // if (foundUser)
       
       // 아예 못찾은 경우
       else { 
-        const query = querystring.stringify({
-          "situation": "error"
-          ,"message": `no user applied this battletag before`
-        });
-        res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
+        const message =  `no user applied this battletag before`;
+        res.redirect(`https://ns.avantwing.com?situation=error&message=${message}`);
         return;
-      } //else (foundUser)
+      } //else
 
       
-      } // else  (foundConfirmedUser)
     } // outer try
     catch (error) {
       console.log(error);
-      const query = querystring.stringify({
-        "situation": "error"
-        ,"message": `failed in bnet auth`
-      });
-      res.redirect('https://ns.avantwing.com/?' + query);
-      return;
+      next(error);
+      //res.redirect(`https://ns.avantwing.com?reason=bnet-failure`); 
     }
   
 });
 
 
-// (passport 이용해서 블리자드 계정 로그 아웃이 안된다) 블리자드 홈페이지 가서 로그아웃 해서 돌아오면 로그아웃 되어있다
+
+
+/* no working
+// cors 문제때문에 배틀넷으로 로그인/로그아웃 시스템은 내 실력으로 못하겠다 (배틀태그 확인만 진행중)
+// https://velog.io/@parkoon/Passport.js-%EB%A1%9C-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B5%AC%ED%98%84%ED%95%98%EC%9D%B4
+router.get('/log-out', (req, res) => {
+
+  req.logout();
+  req.session.save( function(){
+    res.redirect('https://ns.avantwing.com?reason=bnet-logged-out');
+    return;
+  })
+})
+*/
+
 
 
 module.exports = router;

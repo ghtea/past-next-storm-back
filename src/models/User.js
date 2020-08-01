@@ -23,12 +23,13 @@ const User = new Schema({
   
   , joined: { type: Date, default: Date.now }
   , accessed: { type: Date, default: Date.now }
+  , whenBattletagPendingAdded: Date
 
   
   //, thoughtCount: { type: Number, default: 0 } // 서비스에서 포스트를 작성 할 때마다 1씩 올라갑니다
   
     
-}, { collection: 'Users', versionKey: false} );
+}, { collection: 'User_', versionKey: false} );
 
 
 
@@ -64,13 +65,6 @@ User.statics.findByEmailOrUsername = function({username, email}) {
 User.statics.register = async function ( payload ) {
   // 데이터를 생성 할 때는 new this() 를 사용합니다.
   
-  /*
-    _id: uuid()
-    , email: inputEmail1.value
-    , password: inputPassword1.value
-    , battletagPending: inputBattletagPending.value
-  */
-  
   const mongoUser = new this({
       _id: payload._id
     
@@ -78,6 +72,7 @@ User.statics.register = async function ( payload ) {
       , passwordHashed: hash(payload.password)
       
       , battletagPending: payload.battletagPending
+      , whenBattletagPendingAdded: Date.now()
   });
  
     return mongoUser.save();  //약간 의문이 들지만 우선 다음에 살펴보자
