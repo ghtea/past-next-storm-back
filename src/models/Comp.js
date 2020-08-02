@@ -2,6 +2,15 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 
+var schemaRating = new Schema({
+  _id: String
+  , up: Number
+  , down: Number
+  
+  , upMaster: Number
+  , downMaster: Number
+});
+
 
 var schemaPosition = new Schema({
   _id: String
@@ -11,38 +20,26 @@ var schemaPosition = new Schema({
 });
 
 
-//
-var schemaRatingNumber = new Schema({
-  _id: String
-  , up: Number
-  , down: Number
-});
-
-
-var schemaRating = new Schema({
-  _id: String
-  ,anybody: schemaRatingNumber
-  ,master: schemaRatingNumber
-});
-
-
-
-
-//
-var schemaCommentRating = new Schema({
-  _id: String
-  , up: Number
-  , down: Number
-});
 
 var schemaComment = new Schema({
   _id: String
   ,author: String
   
   , language: String
-  ,content: String
-  ,link: String
-  ,rating: schemaCommentRating
+  , content: String
+  
+  , rating: schemaRating
+});
+
+
+var schemaLink= new Schema({
+  _id: String
+  , author: String
+  
+  , type: String // "video", "guide"
+  , content: String
+  
+  , rating: schemaRating
 });
 
 
@@ -50,10 +47,9 @@ var schemaComment = new Schema({
 
 var schemaComp = new Schema({
   _id: String
-  ,password: String
+  ,author: String
   
   ,title: String
-  //,author: String
   
   ,created: Date
   ,updated: Date
@@ -63,11 +59,12 @@ var schemaComp = new Schema({
   ,listMap: [String]
   ,listTag: [String]
   
+  ,listComment: [schemaComment]
+  ,listLink: [schemaLink]
   
   ,rating: schemaRating
-  ,listComment: [schemaComment]
   
-}, { collection: 'collComp', versionKey: false});
+}, { collection: 'Comp_', versionKey: false, strict: false});
 
 
 

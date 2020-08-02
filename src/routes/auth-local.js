@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import querystring from 'querystring';
 import User from '../models/User';
 import { generateToken, jwtMiddleware } from '../works/auth/token';
+import makeUserMmr from '../works/makeUserMmr'
 
 var router = express.Router();
 
@@ -66,7 +67,7 @@ router.post('/sign-up', async (req, res, next) => {
       //res.status(409).json({reason: "duplicate", which: "email"});
       
       // 클라이언트에서 자세한 정보를 듣고 이용하기 위해 status 코드보다는 그냥 상황 정보를 보낸다... 내 실력을 고려한 결과...
-      res.json({situation: "error", reason: "duplicate", which: "email", message:"duplicate email"});
+      res.json({code_situation: "alocal01"});
       return; 
       
       // https://backend-intro.vlpt.us/3/04.html
@@ -86,7 +87,7 @@ router.post('/sign-up', async (req, res, next) => {
     if(existingBattletag) {
       console.log("duplicate battletag") 
       
-      res.json({situation: "error", reason: "duplicate", which: "battletag", message:"duplicate battletag"});
+      res.json({code_situation: "alocal02"});
       return; 
     }
     
@@ -180,14 +181,14 @@ router.post('/log-in', async (req, res, next) => {
         
         // confirmed 중엔 못찾았지만, pending 중에서 찾았을 때, 즉 배틀태그를 아직 인증하지 않은 유저
         if (foundUser) {
-          res.json({situation: "error", message:`this battletag has not been confirmed`});
+          res.json({code_situation: "alocal03"});
           //res.status(403).send("no user by this email or wrong password")
           return;
         }
         
         // battletagPending에도, battletagConfirmed 에도 없는 배틀태그
         else {
-          res.json({situation: "error", message:"no user with this email/battletag"});
+          res.json({code_situation: "alocal04"});
           //res.status(403).send("no user by this email or wrong password")
           return;
         }
@@ -196,7 +197,7 @@ router.post('/log-in', async (req, res, next) => {
       
       else if(!foundUser.validatePassword(password)) {
       // 배틀태그 confirmed로 찾았지만, 비밀번호가 일치하지 않으면
-        res.json({situation: "error", message:"password is wrong"});
+        res.json({code_situation: "alocal05"});
         //res.status(403).send("no user by this email or wrong password")
           
         return;
@@ -205,7 +206,7 @@ router.post('/log-in', async (req, res, next) => {
     } // if (!foundUser)
     else if(!foundUser.validatePassword(password)) {
     // 이메일로 찾았지만, 비밀번호가 일치하지 않으면
-      res.json({situation: "error", message:"password is wrong"});
+      res.json({code_situation: "alocal05"});
       //res.status(403).send("no user by this email or wrong password")
         
       return;
@@ -222,8 +223,7 @@ router.post('/log-in', async (req, res, next) => {
 
     if(existingBattletag) {
       console.log("duplicate battletag") 
-      
-      res.json({situation: "error", reason: "duplicate", which: "battletag", message:"duplicate battletag"});
+      res.json({code_situation: "alocal02"});
       return; 
     }
     
@@ -249,6 +249,8 @@ router.post('/log-in', async (req, res, next) => {
         _id: foundUser._id
         , email: foundUser.email
         , battletagConfirmed: foundUser.battletagConfirmed
+        
+        , mmr: foundUser.mmr
       }
     ); // 유저 정보로 응답합니다.
     //console.log(res)
@@ -339,7 +341,8 @@ router.get('/check', async (req, res, next) => {
     
     if(!foundUser) {
     // 해당 유저가 존재하지 않으면
-      res.json({situation: "error", reason: "none", which: "email", message:"no user with this token"});
+      res.json({code_situation: "alocal06"});
+      //res.json({situation: "error", reason: "none", which: "email", message:"no user with this token"});
       return;
     }
     
@@ -349,6 +352,8 @@ router.get('/check', async (req, res, next) => {
         _id: foundUser._id
         , email: foundUser.email
         , battletagConfirmed: foundUser.battletagConfirmed
+        
+        , mmr: foundUser.mmr
       }
     ); // 유저 정보로 응답합니다.
     
@@ -386,7 +391,7 @@ router.post('/apply-battletag', async (req, res, next) => {
       
     else if(!foundUser.validatePassword(password)) {
     // 이메일로 찾았지만, 비밀번호가 일치하지 않으면
-      res.json({situation: "error", reason: "wrong", which: "password", message:"password is wrong"});
+      res.json({code_situation: "alocal05"});
       //res.status(403).send("no user by this email or wrong password")
         
       return;
@@ -405,8 +410,7 @@ router.post('/apply-battletag', async (req, res, next) => {
     
     if(existingBattletag) {
       console.log("duplicate battletag") 
-      
-      res.json({situation: "error", reason: "duplicate", which: "battletag", message:"duplicate battletag"});
+      res.json({code_situation: "alocal02"});
       return; 
     }
     
@@ -458,6 +462,71 @@ router.post('/apply-battletag', async (req, res, next) => {
 });
 
 
+
+
+router.post('/update-mmr', async (req, res, next) => {
+  
+  try {
+    
+    const { _id, battletag } = req.body; 
+    
+    
+    let foundUser = null;
+    try {
+      // 아이디로 계정 찾기
+      foundUser = await User.findOne({ _id: _id }).exec();
+    } 
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
+    if(!foundUser) {
+      res.json({code_situation: "alocal04"});
+      return;
+    }
+    
+    
+    // 해당 id의 유저를 찾으면 바로 진행
+    else {
+      
+      let objMmr = null;
+      try {
+        objMmr = await makeUserMmr( battletag );
+      } 
+      catch (error) {
+        console.log(error);
+        res.json({code_situation: "basic02"});// error in Heroes Profile api
+        return;
+      }
+      
+      
+      
+      
+      const update = {
+        mmr: objMmr
+        , updatedMmr: Date.now()
+      };
+
+      try {
+        await User.updateOne({ _id: _id }, update);
+      } 
+      catch (error) {
+        console.log(error);
+        res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+        return;
+      }
+      
+      console.log("successfully updated mmr!");
+      res.json(objMmr); // mmr 정보로 응답합니다.
+      //console.log(res)
+  
+    } // else
+
+    
+  } catch(error) { next(error) }
+  
+});
 
 module.exports = router;
 

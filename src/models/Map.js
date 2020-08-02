@@ -15,7 +15,7 @@ var schemaMap = new Schema({
   ,rankedRotation: Boolean
   ,playable: Boolean
   
-}, { collection: 'collMap', versionKey: false});
+}, { collection: 'Map_', versionKey: false, strict: false});
 
 
 

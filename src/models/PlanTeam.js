@@ -102,7 +102,7 @@ var schemaPlanTeam = new Schema({
   
   option: schemaOptionTeam
   
-}, { collection: 'collPlanTeam', versionKey: false});
+}, { collection: 'PlanTeam_', versionKey: false, strict: false});
 
 
 

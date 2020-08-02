@@ -23,7 +23,7 @@ const { generateToken, checkToken } = require('../works/auth/token');
 var router = express.Router();
 
 router.use(passport.initialize());
-router.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: false, cookie: { maxAge: 1000 * 60 * 1 } }));
+router.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: false, cookie: { maxAge:  60 * 1 } }));
 
 
 //router.use(passport.session());
@@ -82,8 +82,7 @@ router.get('/callback',
       
       if (foundConfirmedUser) {
         const query = querystring.stringify({
-          "situation": "error"
-          ,"message": `'${profile.battletag}'is already in use`
+          "code_situation": "abnet01"
         });
         res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
         return;
@@ -113,8 +112,7 @@ router.get('/callback',
         // 유저를 찾앗지만 배틀태그 등록 시간이 너무 예전인 경우, 로그인도 안하고 메시지만 전달
         else {
           const query = querystring.stringify({
-              "situation": "error"
-              ,"message": `more than 3 mins passed since user applied this battletag`
+              "code_situation": "abnet02"
           });
           res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
           return;
@@ -124,8 +122,7 @@ router.get('/callback',
       // 아예 못찾은 경우
       else { 
         const query = querystring.stringify({
-          "situation": "error"
-          ,"message": `no user applied this battletag before`
+          "code_situation": "abnet03"
         });
         res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
         return;
@@ -137,10 +134,9 @@ router.get('/callback',
     catch (error) {
       console.log(error);
       const query = querystring.stringify({
-        "situation": "error"
-        ,"message": `failed in bnet auth`
+        "code_situation": "abnet04"
       });
-      res.redirect('https://ns.avantwing.com/?' + query);
+      res.redirect('https://ns.avantwing.com/auth/apply-battletag?' + query);
       return;
     }
   

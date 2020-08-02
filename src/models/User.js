@@ -10,6 +10,24 @@ const hash = (password) => {
   return crypto.createHmac('sha256', process.env.SECRET_KEY).update(password).digest('hex');
 }
 
+
+
+const schemaRegionMmr = new Schema({
+  mmr: Number,   
+  tier: String,  
+  games: Number,
+});
+
+const schemaMmr = new Schema({
+  NA: schemaRegionMmr,   // mmr of region which have more than 100 games
+  EU: schemaRegionMmr,   
+  KR: schemaRegionMmr,  
+  CN: schemaRegionMmr,   
+  
+  orderMainRegion: [String]  // only regions which have more than 100 games, sorting 'more games - more front'
+});
+
+
 const User = new Schema({
 	
   //username: String
@@ -25,11 +43,15 @@ const User = new Schema({
   , accessed: { type: Date, default: Date.now }
   , whenBattletagPendingAdded: Date
 
+  , mmr: schemaMmr
+  , updatedMmr: Date
   
+  , listComment: [String]
+  , listPlanTeam: [String]
   //, thoughtCount: { type: Number, default: 0 } // 서비스에서 포스트를 작성 할 때마다 1씩 올라갑니다
   
     
-}, { collection: 'User_', versionKey: false} );
+}, { collection: 'User_', versionKey: false, strict: false} );
 
 
 
