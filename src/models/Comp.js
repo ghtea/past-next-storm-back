@@ -1,15 +1,9 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
+const { v4: uuidv4 } = require('uuid');
+// https://www.npmjs.com/package/uuid
 
-var schemaRating = new Schema({
-  _id: String
-  , up: Number
-  , down: Number
-  
-  , upMaster: Number
-  , downMaster: Number
-});
 
 
 var schemaPosition = new Schema({
@@ -21,48 +15,24 @@ var schemaPosition = new Schema({
 
 
 
-var schemaComment = new Schema({
-  _id: String
-  ,author: String
-  
-  , language: String
-  , content: String
-  
-  , rating: schemaRating
-});
-
-
-var schemaLink= new Schema({
-  _id: String
-  , author: String
-  
-  , type: String // "video", "guide"
-  , content: String
-  
-  , rating: schemaRating
-});
-
-
-
-
 var schemaComp = new Schema({
-  _id: String
+  _id: { type: String, default: uuidv4() }
   ,author: String
   
   ,title: String
-  
-  ,created: Date
-  ,updated: Date
-  ,version: String
   
   ,listPosition:[schemaPosition]
   ,listMap: [String]
   ,listTag: [String]
   
-  ,listComment: [schemaComment]
-  ,listLink: [schemaLink]
+  ,listComment: [String]  // list of _id (Comment)
+  ,listLink: [String] // list of _id (Link)
   
-  ,rating: schemaRating
+  ,listLike: [String] // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
+  
+  ,created: Date
+  ,updated: Date
+  ,version: String
   
 }, { collection: 'Comp_', versionKey: false, strict: false});
 

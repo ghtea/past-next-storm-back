@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const Schema = mongoose.Schema;
+
+const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 const dotenv = require('dotenv');
 
@@ -13,25 +15,28 @@ const hash = (password) => {
 
 
 const schemaRegionMmr = new Schema({
-  mmr: Number,   
-  tier: String,  
-  games: Number,
+  _id: { type: String, default: uuidv4() }
+  , mmr: Number   
+  , tier: String  
+  , games: Number
 });
 
 const schemaMmr = new Schema({
-  NA: schemaRegionMmr,   // mmr of region which have more than 100 games
-  EU: schemaRegionMmr,   
-  KR: schemaRegionMmr,  
-  CN: schemaRegionMmr,   
+  _id: { type: String, default: uuidv4() }
+  , NA: schemaRegionMmr   // mmr of region which have more than 100 games
+  , EU: schemaRegionMmr   
+  , KR: schemaRegionMmr  
+  , CN: schemaRegionMmr   
   
-  orderMainRegion: [String]  // only regions which have more than 100 games, sorting 'more games - more front'
+  , orderMainRegion: [String]  // only regions which have more than 100 games, sorting 'more games - more front'
 });
+
 
 
 const User = new Schema({
 	
   //username: String
-  _id: String
+  _id: { type: String, default: uuidv4() }
   
   , email: { type: String }
   , passwordHashed: String // 비밀번호를 해싱해서 저장합니다
@@ -46,8 +51,16 @@ const User = new Schema({
   , mmr: schemaMmr
   , updatedMmr: Date
   
-  , listComment: [String]
   , listPlanTeam: [String]
+  
+
+  , listComp: [String]
+
+  , listComment: [String]  // for Comp-Gallery, Guide (talent, ...)
+  , listLink: [String] 
+  
+  , listLike: [String] // user _id 리스트, // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
+  
   //, thoughtCount: { type: Number, default: 0 } // 서비스에서 포스트를 작성 할 때마다 1씩 올라갑니다
   
     

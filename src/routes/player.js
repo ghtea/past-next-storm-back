@@ -1,6 +1,6 @@
 import express from 'express';
 
-import PlayerMmr from '../models/PlayerMmr';
+//import PlayerMmr from '../models/PlayerMmr';
 import PlanTeam from '../models/PlanTeam';
 
 import readPlayerMmr from '../works/readPlayerMmr'
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 });
 */
 
-
+/*
 // READ PlayerMmr
 router.get('/read-mmr', async (req, res, next) => {
   
@@ -42,7 +42,7 @@ router.get('/read-mmr', async (req, res, next) => {
   } catch(error) { next(error) }
   
 });
-
+*/
 
 // 우선 add 버튼 누를 때 할 작업 모두 다...
 // first add to planTeam (only Name, Battletag, idPlanTeam + status)
@@ -75,6 +75,7 @@ router.put('/add', async (req, res, next) => {
     const newPlayerMmr = putMmrStandardToPlayerMmr(objPlayerMmr, 0); // including mmr standard
     newPlayerMmr['updated'] = dateUpdated;
     
+    /*
     const update1 = newPlayerMmr // including update date
       
     console.log(update1)
@@ -82,7 +83,7 @@ router.put('/add', async (req, res, next) => {
     
     
     await PlayerMmr.findOneAndUpdate(filter1, update1, option1);   // add to cPlayerMmr
-    
+    */
     
     ////////////////
     

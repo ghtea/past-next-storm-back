@@ -2,6 +2,8 @@ import express from 'express';
 
 
 import Comp from '../models/Comp';
+import Comment from '../models/Comment';
+import Link from '../models/Link';
 
 var router = express.Router();
 
@@ -25,27 +27,106 @@ router.post('/', async (req, res, next) => {
     
     const date =  Date.now();
     
+    const compReq = req.body.comp;
+    
     let tComp = new Comp(
       { 
-        _id: req.body._id
-        ,password: req.body.password
+        _id: compReq._id
+        ,author: compReq.author
         
-        ,title: req.body.title
-        //,author: req.body.author
+        ,title: compReq.title
+        
+        ,listPosition: compReq.listPosition
+        ,listMap: compReq.listMap
+        ,listTag: compReq.listTag
+        
+        ,listComment: compReq.listComment
+        ,listLink: compReq.listLink
+        
+        ,listLike: compReq.listLike
         
         ,created: date
         ,updated: date
+        //,version: compReq._id
         
-        ,listMap: req.body.listMap
-        ,listTag: req.body.listTag
-        ,listPosition:req.body.listPosition
-        
-        ,rating: req.body.rating
-        ,listComment: req.body.listComment
         
       });
       
     await tComp.save();
+    
+    
+    
+    if (req.body.comment) {
+      const commentReq = req.body.comment;
+    
+      let tComment = new Comment(
+        { 
+           _id: commentReq._id
+          , subject: commentReq.subject
+          
+          , author: commentReq.author
+          
+          , language: commentReq.language
+          , content: commentReq.content
+          
+          , listLike: commentReq.listLike
+          
+          , created: date
+          , updated: date
+        });
+        
+      await tComment.save();
+    }
+    
+    
+    
+    if (req.body.link1) {
+      const link1Req = req.body.link1;
+    
+      let t1Link = new Link(
+        { 
+          _id: link1Req._id
+          , subject:  link1Req.subject
+          
+          , author:  link1Req.author
+          
+          , type:  link1Req.type
+          , content:  link1Req.content
+          
+          , listLike:  link1Req.listLike
+          
+          ,created: date
+          ,updated: date
+        });
+        
+      await t1Link.save();
+    }
+    
+    
+    
+    if (req.body.link2) {
+      const link2Req = req.body.link2;
+    
+      let t2Link = new Link(
+        { 
+          _id: link2Req._id
+          , subject:  link2Req.subject
+          
+          , author:  link2Req.author
+          
+          , type:  link2Req.type
+          , content:  link2Req.content
+          
+          , listLike:  link2Req.listLike
+          
+          ,created: date
+          ,updated: date
+        });
+        
+      await t2Link.save();
+    }
+    
+    
     
     res.send("new comp has been created!");
     

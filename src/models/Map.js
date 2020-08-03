@@ -1,11 +1,13 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const { v4: uuidv4 } = require('uuid');
 
 
 
 
 var schemaMap = new Schema({
-  _id: Number
+  _id: { type: String, default: uuidv4() }
   ,name: String
   
   ,shortName: String

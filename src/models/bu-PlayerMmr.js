@@ -1,5 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -21,7 +23,7 @@ var schemaRegionMmr = new Schema({
 
 
 var schemaPlayerMmr = new Schema({
-  _id: String,
+  _id: { type: String, default: uuid.v4() },
   updated: Date,
   NA: schemaRegionMmr,
   EU: schemaRegionMmr,

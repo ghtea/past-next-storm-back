@@ -11,8 +11,11 @@ const { jwtMiddleware } = require('./works/auth/token');
 
 const HeroBasic = require('./models/HeroBasic');
 const PlanTeam = require('./models/PlanTeam');
-const PlayerMmr = require('./models/PlayerMmr');
+//const PlayerMmr = require('./models/PlayerMmr');
 const Comp = require('./models/Comp');
+
+const Comment = require('./models/Comment');
+const Link = require('./models/Link');
 
 const { generateToken, checkToken } = require('./works/auth/token');
 

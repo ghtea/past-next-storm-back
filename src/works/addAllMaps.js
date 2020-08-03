@@ -35,7 +35,7 @@ const addAllMaps = async () => {
     const res_HeroesProfile = await axios.get(`https://api.heroesprofile.com/api/Maps?mode=json&api_token=${process.env.TOKEN_HP}`)
     const listMap = res_HeroesProfile.data;
     
-  
+    
     
     for (const objMap of listMap) {
       
@@ -49,54 +49,198 @@ const addAllMaps = async () => {
       
       
       let lines;
-      switch (objMap["name"]) {
-        case "Alterac Pass":
+      
+      let name = {
+        en: {}
+        ko: {}
+        ja: {}
+      };
+      
+      
+      switch (objMap["_id"]) {
+        case "15":
           lines = 3;
+          name.en.full = "Alterac Pass"
+          name.en.short = "AP"
+          name.ko.full = "알터랙 고개"
+          name.ko.short = "알터랙"
+          name.ja.full = "Alterac Pass"
+          name.ja.short = "AP"
+          
           break;
-        case "Battlefield of Eternity":
+          
+          
+        case "1":
           lines = 2;
+          name.en.full = "Battlefield of Eternity"
+          name.en.short = "BoE"
+          name.ko.full = "영원의 전쟁터"
+          name.ko.short = "영전"
+          name.ja.full = "Battlefield of Eternity"
+          name.ja.short = "BoE"
+          
           break;
-        case "Blackheart's Bay":
+          
+          
+        case "2":
           lines = 3;
+          name.en.full = "Blackheart's Bay"
+          name.en.short = "BB"
+          name.ko.full = "블랙하트 항만"
+          name.ko.short = "항만"
+          name.ja.full = "Blackheart's Bay"
+          name.ja.short = "BB"
+          
           break;
-        case "Braxis Holdout":
+          
+          
+        case "3":
           lines = 2;
+          name.en.full = "Braxis Holdout"
+          name.en.short = "BH"
+          name.ko.full = "브락시스 항전"
+          name.ko.short = "브락"
+          name.ja.full = "Braxis Holdout"
+          name.ja.short = "BH"
           break;
+          
+          
         case "Cursed Hollow":
           lines = 3;
+          name.en.full = "Cursed Hollow"
+          name.en.short = "CH"
+          name.ko.full = "저주받은 골짜기"
+          name.ko.short = "저골"
+          name.ja.full = "Cursed Hollow"
+          name.ja.short = "CH"
           break;
+          
+          
         case "Dragon Shire":
           lines = 3;
+          name.en.full = "Dragon Shire"
+          name.en.short = "DS"
+          name.ko.full = "용의 둥지"
+          name.ko.short = "용둥"
+          name.ja.full = "Dragon Shire"
+          name.ja.short = "DS"
+          
           break;
+          
+          
         case "Garden of Terror":
           lines = 3;
+          name.en.full = "Garden of Terror"
+          name.en.short = "GoT"
+          name.ko.full = "공포의 정원"
+          name.ko.short = "정원"
+          name.ja.full = "Garden of Terror"
+          name.ja.short = "GoT"
           break;
+          
+          
         case "Hanamura Temple":
           lines = 2;
+          name.en.full = "Hanamura Temple"
+          name.en.short = "HT"
+          name.ko.full = "하나무라 사원"
+          name.ko.short = "하나"
+          name.ja.full = "Hanamura Temple"
+          name.ja.short = "HT"
+          
           break;
+          
+          
         case "Haunted Mines":
           lines = 2;
+          name.en.full = "Haunted Mines"
+          name.en.short = "HM"
+          name.ko.full = "죽음의 광산"
+          name.ko.short = "광산"
+          name.ja.full = "Haunted Mines"
+          name.ja.short = "HM"
+          
           break;
         case "Infernal Shrines":
           lines = 3;
+          name.en.full = "Infernal Shrines"
+          name.en.short = "IS"
+          name.ko.full = "불지옥 신단"
+          name.ko.short = "불지옥"
+          name.ja.full = "Infernal Shrines"
+          name.ja.short = "IS"
+          
           break;
+          
+          
         case "Sky Temple":
           lines = 3;
+          name.en.full = "Sky Temple"
+          name.en.short = "ST"
+          name.ko.full = "하늘 사원"
+          name.ko.short = "하늘"
+          name.ja.full = "Sky Temple"
+          name.ja.short = "ST"
+          
           break;
+          
+          
         case "Tomb of the Spider Queen":
           lines = 3;
+          name.en.full = "Tomb of the Spider Queen"
+          name.en.short = "ToSQ"
+          name.ko.full = "거미 여왕의 무덤"
+          name.ko.short = "거미"
+          name.ja.full = "Tomb of the Spider Queen"
+          name.ja.short = "ToSQ"
+          
           break;
+          
+          
         case "Towers of Doom":
           lines = 3;
+          name.en.full = "Towers of Doom"
+          name.en.short = "ToD"
+          name.ko.full = "파멸의 탑"
+          name.ko.short = "파탑"
+          name.ja.full = "Towers of Doom"
+          name.ja.short = "ToD"
+          
           break;
+          
+          
         case "Warhead Junction":
           lines = 3;
+          name.en.full = "Warhead Junction"
+          name.en.short = "WJ"
+          name.ko.full = "핵탄두 격전지"
+          name.ko.short = "핵탄두"
+          name.ja.full = "Warhead Junction"
+          name.ja.short = "WJ"
+          
           break;
+          
+          
         case "Volskaya Foundry":
           lines = 3;
+          name.en.full = "Volskaya Foundry"
+          name.en.short = "VF"
+          name.ko.full = "볼스카야 공장"
+          name.ko.short = "볼스"
+          name.ja.full = "Volskaya Foundry"
+          name.ja.short = "VF"
+          
           break;
+          
+          
         default:
           lines = undefined;
+          name.en.full = ""
+          name.en.short = ""
+          name.ko.full = ""
+          name.ko.short = ""
+          name.ja.full = ""
+          name.ja.short = ""
       }
             
       
@@ -113,10 +257,22 @@ const addAllMaps = async () => {
         
         _id: objMap["map_id"]
     
-        ,name: objMap["name"]
+        ,name: {
+          en: {
+            full: name.en.full
+            short: name.en.short
+          }
+          ko: {
+            full: name.ko.full
+            short: name.ko.short
+          }
+          ja: {
+            full: name.ja.full
+            short: name.ja.short
+          }
+        }
   
-        ,shortName: objMap["short_name"]
-        
+  
         ,lines: lines
         ,type: objMap["type"]
         
