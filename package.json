@@ -26,6 +26,7 @@
     "mongoose": "^5.9.21",
     "passport": "^0.4.1",
     "passport-bnet": "^2.0.0",
+    "query-string": "^6.13.1",
     "uuid": "^8.3.0",
     "uuidv4": "^6.2.0"
   }

@@ -7,13 +7,17 @@ const { v4: uuidv4 } = require('uuid');
 
 
 var schemaMap = new Schema({
-  _id: { type: String, default: uuidv4() }
-  ,name: String
+  _id: String  // Heroes Profile API 에서의 id 가져옴
   
-  ,shortName: String
+  ,name: {
+    en: { full: String, short: String }
+    , ko: { full: String, short: String }
+    , ja: { full: String, short: String }
+  }
   
   ,lines: Number
   ,type: String
+  
   ,rankedRotation: Boolean
   ,playable: Boolean
   

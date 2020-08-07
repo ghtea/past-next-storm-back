@@ -34,10 +34,11 @@ const addAllMaps = async () => {
   try {
     const res_HeroesProfile = await axios.get(`https://api.heroesprofile.com/api/Maps?mode=json&api_token=${process.env.TOKEN_HP}`)
     const listMap = res_HeroesProfile.data;
-    
-    
+
     
     for (const objMap of listMap) {
+      
+      console.log(objMap)
       
       let rankedRotation;
       if (objMap["ranked_rotation"] === 1) {rankedRotation=true}
@@ -52,15 +53,16 @@ const addAllMaps = async () => {
       
       let name = {
         en: {}
-        ko: {}
-        ja: {}
+        ,ko: {}
+        ,ja: {}
       };
       
       
-      switch (objMap["_id"]) {
-        case "15":
+      switch (objMap["map_id"]) {
+        case 15:  // string이 아닌 int 임에 주의!
           lines = 3;
-          name.en.full = "Alterac Pass"
+          //name.en.full = "Alterac Pass"
+          name.en.full = objMap["name"]
           name.en.short = "AP"
           name.ko.full = "알터랙 고개"
           name.ko.short = "알터랙"
@@ -70,9 +72,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "1":
+        case 1:
           lines = 2;
-          name.en.full = "Battlefield of Eternity"
+          //name.en.full = "Battlefield of Eternity"
+          name.en.full = objMap["name"]
           name.en.short = "BoE"
           name.ko.full = "영원의 전쟁터"
           name.ko.short = "영전"
@@ -82,9 +85,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "2":
+        case 2:
           lines = 3;
-          name.en.full = "Blackheart's Bay"
+          //name.en.full = "Blackheart's Bay"
+          name.en.full = objMap["name"]
           name.en.short = "BB"
           name.ko.full = "블랙하트 항만"
           name.ko.short = "항만"
@@ -94,9 +98,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "3":
+        case 3:
           lines = 2;
-          name.en.full = "Braxis Holdout"
+          //name.en.full = "Braxis Holdout"
+          name.en.full = objMap["name"]
           name.en.short = "BH"
           name.ko.full = "브락시스 항전"
           name.ko.short = "브락"
@@ -105,9 +110,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Cursed Hollow":
+        case 4:
           lines = 3;
-          name.en.full = "Cursed Hollow"
+          //name.en.full = "Cursed Hollow"
+          name.en.full = objMap["name"]
           name.en.short = "CH"
           name.ko.full = "저주받은 골짜기"
           name.ko.short = "저골"
@@ -116,9 +122,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Dragon Shire":
+        case 5:
           lines = 3;
-          name.en.full = "Dragon Shire"
+          //name.en.full = "Dragon Shire"
+          name.en.full = objMap["name"]
           name.en.short = "DS"
           name.ko.full = "용의 둥지"
           name.ko.short = "용둥"
@@ -128,9 +135,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Garden of Terror":
+        case 6:
           lines = 3;
-          name.en.full = "Garden of Terror"
+          //name.en.full = "Garden of Terror"
+          name.en.full = objMap["name"]
           name.en.short = "GoT"
           name.ko.full = "공포의 정원"
           name.ko.short = "정원"
@@ -139,9 +147,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Hanamura Temple":
+        case 7:
           lines = 2;
-          name.en.full = "Hanamura Temple"
+          //name.en.full = "Hanamura Temple"
+          name.en.full = objMap["name"]
           name.en.short = "HT"
           name.ko.full = "하나무라 사원"
           name.ko.short = "하나"
@@ -151,9 +160,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Haunted Mines":
+        case 8:
           lines = 2;
-          name.en.full = "Haunted Mines"
+          //name.en.full = "Haunted Mines"
+          name.en.full = objMap["name"]
           name.en.short = "HM"
           name.ko.full = "죽음의 광산"
           name.ko.short = "광산"
@@ -161,9 +171,12 @@ const addAllMaps = async () => {
           name.ja.short = "HM"
           
           break;
-        case "Infernal Shrines":
+          
+          
+        case 9:
           lines = 3;
-          name.en.full = "Infernal Shrines"
+          //name.en.full = "Infernal Shrines"
+          name.en.full = objMap["name"]
           name.en.short = "IS"
           name.ko.full = "불지옥 신단"
           name.ko.short = "불지옥"
@@ -173,9 +186,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Sky Temple":
+        case 10:
           lines = 3;
-          name.en.full = "Sky Temple"
+          //name.en.full = "Sky Temple"
+          name.en.full = objMap["name"]
           name.en.short = "ST"
           name.ko.full = "하늘 사원"
           name.ko.short = "하늘"
@@ -185,9 +199,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Tomb of the Spider Queen":
+        case 11:
           lines = 3;
-          name.en.full = "Tomb of the Spider Queen"
+          //name.en.full = "Tomb of the Spider Queen"
+          name.en.full = objMap["name"]
           name.en.short = "ToSQ"
           name.ko.full = "거미 여왕의 무덤"
           name.ko.short = "거미"
@@ -197,9 +212,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Towers of Doom":
+        case 12:
           lines = 3;
-          name.en.full = "Towers of Doom"
+          //name.en.full = "Towers of Doom"
+          name.en.full = objMap["name"]
           name.en.short = "ToD"
           name.ko.full = "파멸의 탑"
           name.ko.short = "파탑"
@@ -209,9 +225,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Warhead Junction":
+        case 13:
           lines = 3;
-          name.en.full = "Warhead Junction"
+          //name.en.full = "Warhead Junction"
+          name.en.full = objMap["name"]
           name.en.short = "WJ"
           name.ko.full = "핵탄두 격전지"
           name.ko.short = "핵탄두"
@@ -221,9 +238,10 @@ const addAllMaps = async () => {
           break;
           
           
-        case "Volskaya Foundry":
+        case 14:
           lines = 3;
-          name.en.full = "Volskaya Foundry"
+          //name.en.full = "Volskaya Foundry"
+          name.en.full = objMap["name"]
           name.en.short = "VF"
           name.ko.full = "볼스카야 공장"
           name.ko.short = "볼스"
@@ -235,7 +253,7 @@ const addAllMaps = async () => {
           
         default:
           lines = undefined;
-          name.en.full = ""
+          name.en.full = objMap["name"]
           name.en.short = ""
           name.ko.full = ""
           name.ko.short = ""
@@ -258,18 +276,20 @@ const addAllMaps = async () => {
         _id: objMap["map_id"]
     
         ,name: {
+          
           en: {
             full: name.en.full
-            short: name.en.short
+            ,short: name.en.short
           }
-          ko: {
+          ,ko: {
             full: name.ko.full
-            short: name.ko.short
+            ,short: name.ko.short
           }
-          ja: {
+          ,ja: {
             full: name.ja.full
-            short: name.ja.short
+            ,short: name.ja.short
           }
+          
         }
   
   

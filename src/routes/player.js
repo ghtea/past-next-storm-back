@@ -67,14 +67,16 @@ router.put('/add', async (req, res, next) => {
     
     let objPlayerMmr;
     
-    
+    //console.log("1111")
     objPlayerMmr = await readPlayerMmr( battletag ); // read from heroesprofile
     
+    //console.log("2222")
     const listRegionMain = returnListRegionMain(objPlayerMmr); // 이건 더 아래에서 데이터 베이스에 넣자
     
+    //console.log("3333")
     const newPlayerMmr = putMmrStandardToPlayerMmr(objPlayerMmr, 0); // including mmr standard
     newPlayerMmr['updated'] = dateUpdated;
-    
+    //console.log("4444")
     /*
     const update1 = newPlayerMmr // including update date
       
@@ -180,6 +182,8 @@ router.put('/add-roles', async (req, res, next) => {
     console.log('listPlayerRole');
     console.log(listPlayerRole);
     
+    
+    
     const filter = {
       _id: idPlanTeam
       ,"listPlayerEntry._id" : battletag
@@ -193,11 +197,13 @@ router.put('/add-roles', async (req, res, next) => {
     
     await PlanTeam.updateOne(filter, update);  
     
-    
-    res.send("successfully updated")
+    console.log("successfully updated");
+    res.send("successfully updated");
     
   } catch(error) { next(error) }
 })
+
+
 
 
 router.put('/update-tags', async (req, res, next) => {

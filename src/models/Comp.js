@@ -17,22 +17,27 @@ var schemaPosition = new Schema({
 
 var schemaComp = new Schema({
   _id: { type: String, default: uuidv4() }
-  ,author: String
+  , author: String
   
-  ,title: String
+  , title: String
   
-  ,listPosition:[schemaPosition]
-  ,listMap: [String]
-  ,listTag: [String]
+  , listPosition: [schemaPosition]
+  , size: Number
+  , listIdMainHero: [String]
+  , listIdAllHero: [String]
   
-  ,listComment: [String]  // list of _id (Comment)
-  ,listLink: [String] // list of _id (Link)
+  , listIdMap: [String]
+  , listTag: [String]
   
-  ,listLike: [String] // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
+  , listIdComment: [String]  // list of _id (Comment)
+  , listIdVideo: [String] // list of _id (Video)
+  , listIdLink: [String] // list of _id (Link)
   
-  ,created: Date
-  ,updated: Date
-  ,version: String
+  , listLike: [String] // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
+  
+  , created: Date
+  , updated: Date
+  , version: String
   
 }, { collection: 'Comp_', versionKey: false, strict: false});
 

@@ -1,5 +1,6 @@
 import express from 'express';
 
+//import queryString from 'query-string';
 
 import Comp from '../models/Comp';
 import Comment from '../models/Comment';
@@ -8,15 +9,53 @@ import Link from '../models/Link';
 var router = express.Router();
 
 
-
-// GET ALL Comps
+// get all
 router.get('/', (req, res) => {
+  
   Comp.find((err, listComp) => {
     if (err) return res.status(500).send({
       error: 'database failure'
     });
     res.json(listComp);
   })
+  
+});
+
+
+
+router.get('/filtered', (req, res) => {
+  /*
+  const filterSize = [2, 3]; // 이 리스트 항목 중 하나의 값을 가져야한다
+  const filterMap = ['2', '3']; // 이 리스트의 모든 항목을 가져야 한다
+  const filterTag = ['ToWin', 'Kill']; // 이 리스트의 모든 항목을 가져야 한다
+  */
+  const query = req.query;
+  
+  const filterSize = query.filterSize; // 이 리스트 항목 중 하나의 값을 가져야한다
+  const filterMap = query.filterMap;  // 이 리스트의 모든 항목을 가져야 한다
+  const filterTag = query.filterTag;  // 이 리스트의 모든 항목을 가져야 한다
+  
+  console.log(filterSize)
+  
+  const filter={
+    
+    $and : [
+      
+     { size: { $in: filterSize} }
+     , { listIdMap: { $all: filterMap } }
+     , { listTag: { $all: filterTag } }
+     
+    ]
+    
+  };
+  
+  Comp.find(filter, (err, listComp) => {
+    if (err) return res.status(500).send({
+      error: 'database failure'
+    });
+    res.json(listComp);
+  })
+  
 });
 
 
@@ -29,24 +68,45 @@ router.post('/', async (req, res, next) => {
     
     const compReq = req.body.comp;
     
+    let listPosition = [];
+    
+    // 비어있는 position 들은 제거
+    for (const position of compReq.listPosition) {
+      if (position.listIdHero.length >0) {
+        listPosition.push(position);
+      }
+    }
+    
+    const listIdMainHero = listPosition.map(element => element.listIdHero[0]);
+
+    const listListIdHero = listPosition.map(element => element.listIdHero);
+    
+    // https://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays
+    const listIdAllHero = [].concat.apply([], listListIdHero);
+    
     let tComp = new Comp(
       { 
         _id: compReq._id
-        ,author: compReq.author
+        , author: compReq.author
         
-        ,title: compReq.title
+        , title: compReq.title
         
-        ,listPosition: compReq.listPosition
-        ,listMap: compReq.listMap
-        ,listTag: compReq.listTag
         
-        ,listComment: compReq.listComment
-        ,listLink: compReq.listLink
+        , listPosition: listPosition
+        , size: listPosition.length
+        , listIdMainHero: listIdMainHero
+        , listIdAllHero: listIdAllHero
         
-        ,listLike: compReq.listLike
+        , listIdMap: compReq.listIdMap
+        , listTag: compReq.listTag
         
-        ,created: date
-        ,updated: date
+        , listComment: compReq.listComment
+        , listLink: compReq.listLink
+        
+        , listLike: compReq.listLike
+        
+        , created: date
+        , updated: date
         //,version: compReq._id
         
         
