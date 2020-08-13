@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import querystring from 'querystring';
 import User from '../models/User';
 import { generateToken, jwtMiddleware } from '../works/auth/token';
-import makeUserMmr from '../works/makeUserMmr'
 
 var router = express.Router();
 
@@ -212,21 +211,6 @@ router.post('/log-in', async (req, res, next) => {
       return;
     }
     
-    // battletag 중복 체크
-    let existingBattletag = null;
-    try {
-      existingBattletag = await User.findOne({battletagConfirmed: req.body.battletagPending}).exec(); 
-    } catch (error) {
-      console.log(error);
-      res.status(500).send() // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
-    }
-
-    if(existingBattletag) {
-      console.log("duplicate battletag") 
-      res.json({code_situation: "alocal02"});
-      return; 
-    }
-    
 
     let token = null;
     try {
@@ -240,19 +224,15 @@ router.post('/log-in', async (req, res, next) => {
       return;
     }
     
-  
+    // 평범하게 assign 할때는 foundUser.키명 으로 되지만 아래처럼 이용할때는 _doc 써야하는 듯...
+    let resUser = Object.assign({}, foundUser._doc);
+    delete resUser.passwordHashed;
+    resUser.battletag = resUser.battletagConfirmed;
+    
     res.cookie('access_token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }); 
     // cookie 브라우저가 설정하려면 별도의 추가 설정 필요
     // https://www.zerocho.com/category/NodeJS/post/5e9bf5b18dcb9c001f36b275
-    res.json(
-      {
-        _id: foundUser._id
-        , email: foundUser.email
-        , battletagConfirmed: foundUser.battletagConfirmed
-        
-        , mmr: foundUser.mmr
-      }
-    ); // 유저 정보로 응답합니다.
+    res.json(resUser); // 유저 정보로 응답합니다.
     //console.log(res)
 
     
@@ -346,16 +326,12 @@ router.get('/check', async (req, res, next) => {
       return;
     }
     
+    // 평범하게 assign 할때는 foundUser.키명 으로 되지만 아래처럼 이용할때는 _doc 써야하는 듯...
+    let resUser = Object.assign({}, foundUser._doc);
+    delete resUser.passwordHashed;
+    resUser.battletag = resUser.battletagConfirmed;
     
-    res.json(
-      {
-        _id: foundUser._id
-        , email: foundUser.email
-        , battletagConfirmed: foundUser.battletagConfirmed
-        
-        , mmr: foundUser.mmr
-      }
-    ); // 유저 정보로 응답합니다.
+    res.json(resUser); // 유저 정보로 응답합니다.
     
   } catch(error) { next(error) }
   
@@ -464,69 +440,7 @@ router.post('/apply-battletag', async (req, res, next) => {
 
 
 
-router.post('/update-mmr', async (req, res, next) => {
-  
-  try {
-    
-    const { _id, battletag } = req.body; 
-    
-    
-    let foundUser = null;
-    try {
-      // 아이디로 계정 찾기
-      foundUser = await User.findOne({ _id: _id }).exec();
-    } 
-    catch (error) {
-      console.log(error);
-      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
-      return;
-    }
-    if(!foundUser) {
-      res.json({code_situation: "alocal04"});
-      return;
-    }
-    
-    
-    // 해당 id의 유저를 찾으면 바로 진행
-    else {
-      
-      let objMmr = null;
-      try {
-        objMmr = await makeUserMmr( battletag );
-      } 
-      catch (error) {
-        console.log(error);
-        res.json({code_situation: "basic02"});// error in Heroes Profile api
-        return;
-      }
-      
-      
-      
-      
-      const update = {
-        mmr: objMmr
-        , updatedMmr: Date.now()
-      };
 
-      try {
-        await User.updateOne({ _id: _id }, update);
-      } 
-      catch (error) {
-        console.log(error);
-        res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
-        return;
-      }
-      
-      console.log("successfully updated mmr!");
-      res.json(objMmr); // mmr 정보로 응답합니다.
-      //console.log(res)
-  
-    } // else
-
-    
-  } catch(error) { next(error) }
-  
-});
 
 module.exports = router;
 

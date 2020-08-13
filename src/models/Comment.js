@@ -8,12 +8,12 @@ var schemaComment = new Schema({
   _id: { type: String, default: uuidv4() }
   , subject: { _id:String, model:String} // where this comment belong to, ex:  "dfdfhefef-fdfd" , "Comp"
   
-  ,author: String
+  , author: String
   
   , language: String
   , content: String
   
-  , listLike: [String]  // list of _id who liked this item
+  , listUserLike: [String]  // list of _id who liked this item
   
   ,created: Date
   ,updated: Date

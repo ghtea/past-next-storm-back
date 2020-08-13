@@ -104,6 +104,36 @@ const addAllHeroBasics = async () => {
       const tags = await return_tags_each_hero(key_HeroesTalents);
       tHeroBasic["tags"] = tags;
       
+      const listTrans = Object.keys(tHeroBasic["translations"]).map(element=>tHeroBasic["translations"][element]);
+      let listSearch = [tHeroBasic._id, tHeroBasic.key_HeroesProfile, tHeroBasic.short_name_HeroesProfile, ...listTrans, tHeroBasic["role"] ];
+      
+      
+      // tags 는 넣지 말자...
+      
+      switch(tHeroBasic["role"]){
+        case "Tanker":
+          listSearch = listSearch.concat(["메인 탱커", "전사"])
+          break;
+        case "Bruiser":
+          listSearch = listSearch.concat(["투사", "브루져", "브루저", "서브 탱커"])
+          break;
+        case "Ranged Assassin":
+          listSearch = listSearch.concat(["원거리 암살자", "원딜"])
+          break;
+        case "Melee Assassin":
+          listSearch = listSearch.concat(["근접 암살자", "근딜"])
+          break;
+        case "Healer":
+          listSearch = listSearch.concat(["치유사", "힐러", "메인 힐러"])
+          break;
+        case "Support":
+          listSearch = listSearch.concat(["지원가", "서포터", "서포트"])
+          break;
+      }
+      
+      tHeroBasic["search"] = listSearch.join(" ");
+      tHeroBasic["search"] = tHeroBasic["search"].toLowerCase();
+      
       
       const mongoHeroBasic = new HeroBasic(tHeroBasic);
     

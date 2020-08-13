@@ -89,7 +89,7 @@ const makeUserMmr = async (battletag) => {
     
   }
   
-  const listRegionFiltered = listRegion.filter(region => objMmr[region]['games'] >= 100);
+  const listRegionFiltered = listRegion.filter(region => objMmr[region]['games'] >= 50);
   const orderMainRegion = listRegionFiltered.sort( 
     (region1, region2) => {
       return (objMmr[region2]['games'] - objMmr[region1]['games']); // 큰게 앞으로

@@ -4,50 +4,67 @@ import express from 'express';
 
 import Comp from '../models/Comp';
 import Comment from '../models/Comment';
-import Link from '../models/Link';
+import Video from '../models/Video';
+import User from '../models/User';
 
 var router = express.Router();
 
 
-// get all
-router.get('/', (req, res) => {
+
+// READ Comp
+router.get('/:idComp', async (req, res, next) => {
   
-  Comp.find((err, listComp) => {
-    if (err) return res.status(500).send({
-      error: 'database failure'
+  try {
+  
+    const filter = { _id: req.params.idComp };
+    
+    Comp.findOne(filter, (err, foundComp) => {
+      if(err) return res.status(500).json({error: err});
+      else if(!foundComp) { return res.status(404).json({error: 'Comp not found'}); }
+      else { res.json(foundComp); }
     });
-    res.json(listComp);
-  })
+    
+  } catch(error) { next(error) }
   
 });
 
 
 
-router.get('/filtered', (req, res) => {
-  /*
-  const filterSize = [2, 3]; // 이 리스트 항목 중 하나의 값을 가져야한다
-  const filterMap = ['2', '3']; // 이 리스트의 모든 항목을 가져야 한다
-  const filterTag = ['ToWin', 'Kill']; // 이 리스트의 모든 항목을 가져야 한다
-  */
+router.get('/', (req, res) => {
+  
+  
   const query = req.query;
-  
-  const filterSize = query.filterSize; // 이 리스트 항목 중 하나의 값을 가져야한다
-  const filterMap = query.filterMap;  // 이 리스트의 모든 항목을 가져야 한다
-  const filterTag = query.filterTag;  // 이 리스트의 모든 항목을 가져야 한다
-  
-  console.log(filterSize)
-  
+    
+  const filterSize = (query.filterSize && query.filterSize.length !== 0 )? 
+    { size: { $in: query.filterSize } }
+    : {  };
+    
+  const filterTag = (query.filterTag && query.filterTag.length !== 0 )? 
+    { listTag: { $all: query.filterTag } }
+    : {  };
+    
+  const filterMap = (query.filterMap && query.filterMap.length !== 0 )? 
+    { listIdMap: { $all: query.filterMap } }
+    : {  };
+    
+  const filterHero = (query.filterHero && query.filterHero.length !== 0 )? 
+    { listIdAllHero: { $all: query.filterHero } }
+    : {  };
+    
   const filter={
     
     $and : [
       
-     { size: { $in: filterSize} }
-     , { listIdMap: { $all: filterMap } }
-     , { listTag: { $all: filterTag } }
+     filterSize
+     , filterTag
+     , filterMap
+     , filterHero
      
     ]
     
   };
+  
+  //console.log(filter)
   
   Comp.find(filter, (err, listComp) => {
     if (err) return res.status(500).send({
@@ -68,14 +85,6 @@ router.post('/', async (req, res, next) => {
     
     const compReq = req.body.comp;
     
-    let listPosition = [];
-    
-    // 비어있는 position 들은 제거
-    for (const position of compReq.listPosition) {
-      if (position.listIdHero.length >0) {
-        listPosition.push(position);
-      }
-    }
     
     const listIdMainHero = listPosition.map(element => element.listIdHero[0]);
 
@@ -92,7 +101,7 @@ router.post('/', async (req, res, next) => {
         , title: compReq.title
         
         
-        , listPosition: listPosition
+        , listPosition: compReq.listPosition
         , size: listPosition.length
         , listIdMainHero: listIdMainHero
         , listIdAllHero: listIdAllHero
@@ -100,10 +109,10 @@ router.post('/', async (req, res, next) => {
         , listIdMap: compReq.listIdMap
         , listTag: compReq.listTag
         
-        , listComment: compReq.listComment
-        , listLink: compReq.listLink
+        , listIdComment: compReq.listIdComment
+        , listIdVideo: compReq.listIdVideo
         
-        , listLike: compReq.listLike
+        , listUserLike: compReq.listUserLike
         
         , created: date
         , updated: date
@@ -113,6 +122,14 @@ router.post('/', async (req, res, next) => {
       });
       
     await tComp.save();
+    
+    // 유저의 works 정보에 추가
+    const update_works_comp = {
+        $push: {
+          "works.listIdComp": compReq._id
+        }
+      };
+    await User.updateOne({ _id: compReq.author }, update_works_comp);
     
     
     
@@ -129,63 +146,55 @@ router.post('/', async (req, res, next) => {
           , language: commentReq.language
           , content: commentReq.content
           
-          , listLike: commentReq.listLike
+          , listUserLike: commentReq.listUserLike
           
           , created: date
           , updated: date
         });
         
       await tComment.save();
+      
+      // 유저의 works 정보에 추가
+      const update_works_comment = {
+          $push: {
+            "works.listIdComment": commentReq._id
+          }
+        };
+      await User.updateOne({ _id: commentReq.author }, update_works_comment);
     }
     
     
     
-    if (req.body.link1) {
-      const link1Req = req.body.link1;
+    if (req.body.video) {
+      const videoReq = req.body.video;
     
-      let t1Link = new Link(
+      let tVideo = new Video(
         { 
-          _id: link1Req._id
-          , subject:  link1Req.subject
+          _id: videoReq._id
+          , subject:  videoReq.subject
           
-          , author:  link1Req.author
+          , author:  videoReq.author
           
-          , type:  link1Req.type
-          , content:  link1Req.content
+          , type: videoReq.type
+          , urlContent:  videoReq.urlContent
+          , idContent:  videoReq.idContent
           
-          , listLike:  link1Req.listLike
+          , listUserLike:  videoReq.listUserLike
           
           ,created: date
           ,updated: date
         });
         
-      await t1Link.save();
+      await tVideo.save();
+      
+      // 유저의 works 정보에 추가
+      const update_works_video = {
+          $push: {
+            "works.listIdVideo": videoReq._id
+          }
+        };
+      await User.updateOne({ _id: videoReq.author }, update_works_video);
     }
-    
-    
-    
-    if (req.body.link2) {
-      const link2Req = req.body.link2;
-    
-      let t2Link = new Link(
-        { 
-          _id: link2Req._id
-          , subject:  link2Req.subject
-          
-          , author:  link2Req.author
-          
-          , type:  link2Req.type
-          , content:  link2Req.content
-          
-          , listLike:  link2Req.listLike
-          
-          ,created: date
-          ,updated: date
-        });
-        
-      await t2Link.save();
-    }
-    
     
     
     res.send("new comp has been created!");
@@ -200,19 +209,49 @@ router.post('/', async (req, res, next) => {
 
 
 
-// READ Comp // maybe get should use params
-router.get('/:idComp', async (req, res, next) => {
+
+//UPDATE
+router.put('/:idComp', async (req, res, next) => {
   
   try {
-  
+    
     const filter = { _id: req.params.idComp };
     
-    Comp.findOne(filter, (err, tComp) => {
-      if(err) return res.status(500).json({error: err});
-      else if(!tComp) { return res.status(404).json({error: 'Comp not found'}); }
-      else { res.json(tComp); }
-    });
+    const date =  Date.now();
+    
+    const compReq = req.body;
+    
+    let listPosition = compReq.listPosition;
+    
+    
+    const listIdMainHero = listPosition.map(element => element.listIdHero[0]);
 
+    const listListIdHero = listPosition.map(element => element.listIdHero);
+    
+    // https://stackoverflow.com/questions/5080028/what-is-the-most-efficient-way-to-concatenate-n-arrays
+    const listIdAllHero = [].concat.apply([], listListIdHero);
+    
+    let update = 
+      { 
+        
+        title: compReq.title
+        
+        
+        , listPosition: listPosition
+        , size: listPosition.length
+        , listIdMainHero: listIdMainHero
+        , listIdAllHero: listIdAllHero
+        
+        , listIdMap: compReq.listIdMap
+        , listTag: compReq.listTag
+        
+        , updated: date
+      };
+    
+      
+    await Comp.updateOne( filter , update);
+    
+    res.send("comp has benn updated!");
     
   } catch(error) { next(error) }
   
@@ -221,8 +260,68 @@ router.get('/:idComp', async (req, res, next) => {
 
 
 
-//UPDATE
 
+router.put('/like/:idComp', async (req, res, next) => {
+  try {
+  
+    const query = req.query;
+    
+    
+    const idComp = req.params.idComp;
+    const idUser = query.idUser;  
+    const how = query.how;
+    
+    
+    
+    const filterUser = { _id:idUser};
+    const filterComp = { _id:idComp};
+    let updateUser = {};
+    let updateComp = {};
+    
+    if (how !== 'false') {
+      updateUser = {
+        $addToSet: { "likes.listIdComp": idComp }
+      }
+      updateComp = {
+        $addToSet: { "listUserLike": idUser }
+      }
+    }
+    else {
+      updateUser = {
+        $pull: { "likes.listIdComp": idComp }
+      }
+      updateComp = {
+        $pull: { "listUserLike": idUser }
+      }
+    }
+    
+    
+    try {
+      await User.updateOne(filterUser, updateUser);
+      console.log("successfully updated user");
+    } 
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
+    
+    try {
+      await Comp.updateOne(filterComp, updateComp);
+      console.log("successfully updated comp");
+    } 
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
+    
+    res.send("successfully updated user and comp")
+    
+  } catch(error) {next(error)}
+  
+});
+/*
 router.put('/', async (req, res, next) => {
   try {
   
@@ -241,7 +340,7 @@ router.put('/', async (req, res, next) => {
   } catch(error) {next(error)}
   
 });
-
+*/
 
 
 
@@ -249,14 +348,31 @@ router.put('/', async (req, res, next) => {
 router.delete('/:idComp', async (req, res, next) => {
   
   try {
-  
-    const filter = { _id: req.params.idComp };
     
-    Comp.deleteOne(filter, (err, planTeam) => {
-      if(err) return res.status(500).json({error: err});
-      else if(!tComp) { return res.status(404).json({error: 'Comp not found'}); }
-      else { res.send("plan has been deleted");}
-    });
+    try {
+      const filter = { _id: req.params.idComp };
+      await Comp.deleteOne(filter);
+      
+      
+      
+      const filterUser = {
+        "works.listIdComp": req.params.idComp
+      };
+      const updateUser = {
+        $pull: { "works.listIdComp": req.body._id }
+      };
+      
+      await User.updateOne(filterUser, updateUser);
+      
+      res.send("The comp has been deleted");
+      
+    }
+    
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
     
   } catch(error) { next(error) }
   
@@ -270,75 +386,3 @@ module.exports = router;
 
 
 
-
-
-
-
-/*
-// ADD OR UPDATE PlanTeam   없을 때 생성해야 하는 가능성을 포함
-
-// 그냥 생성과 수정 나눠서 하는게 나을듯? upsert가 생각보다 좋지만은 않은듯...  
-router.put('/', async (req, res, next) => {
-  try {
-  
-    if (req.body.filter && req.body.update) {
-      
-      const filter = req.body.filter;
-      const update = req.body.update;
-      const option = {returnNewDocument: true, upsert: true };
-      
-      const result = await PlanTeam.findOneAndUpdate(filter, update, option);
-      
-      res.send("ahr working");  // res 에 아무것도 안주면 응답 없다고 에러 발생!
-      
-      return new Promise((resolve, reject)=> {
-        if (!result) { console.log('already exists or error'); return;}
-        else { console.log('sucessfully updated'); resolve(result); }
-      })
-      
-    } else { res.json( { error: 'filter & update obj are necessary' }) }
-    
-  } catch(error) {next(error)}
-  
-});
-
-*/
-
-
-
-
-
-
-
-
-/*
-
-let planTeam = await PlanTeam.findOne({_id : idPlanTeam});
-const playerEntry = planTeam.listPlayerEntry.id(battletag); // ? 이거는 그냥 promise 반환하는게 아니라 비동기로 해도 되는듯?
-playerEntry.set({mmrStandard: newMmrStandard});
-await planTeam.save();
-
-        .then((home) => {
-          
-            const tes=home.post.id("5a3fe65546c99208b8cc75b1");
-            tes.set({"title" : "it workssdfg"});
-            home.save();
-        })
-        .catch((err)=>{
-            console.log("error");
-        });
-        
-*/
-
-/*
-HomeModel.findOne({name : "tiger"})
-        .then((home) => {
-            console.log("findone")
-            const tes=home.post.id("5a3fe65546c99208b8cc75b1");
-            tes.set({"title" : "it workssdfg"});
-            home.save();
-        })
-        .catch((err)=>{
-            console.log("error");
-        });
-        */

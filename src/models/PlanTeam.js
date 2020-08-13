@@ -93,6 +93,9 @@ var schemaOptionTeam = new Schema({
 var schemaPlanTeam = new Schema({
   _id: { type: String, default: uuidv4() }
   , password: String
+  
+  , listAuthor: [String]
+  
   , title: String
   
   , created: Date

@@ -43,26 +43,39 @@ const User = new Schema({
   
   , battletagPending: String
   , battletagConfirmed: String
-  
-  , joined: { type: Date, default: Date.now }
-  , accessed: { type: Date, default: Date.now }
   , whenBattletagPendingAdded: Date
-
+  
   , mmr: schemaMmr
   , updatedMmr: Date
   
-  , listPlanTeam: [String]
   
+  
+  , joined: { type: Date, default: Date.now }
+  , accessed: { type: Date, default: Date.now }
 
-  , listComp: [String]
-
-  , listComment: [String]  // for Comp-Gallery, Guide (talent, ...)
-  , listLink: [String] 
   
-  , listLike: [String] // user _id 리스트, // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
   
-  //, thoughtCount: { type: Number, default: 0 } // 서비스에서 포스트를 작성 할 때마다 1씩 올라갑니다
   
+  , profile: {
+    listIdPalette: { type: [String] , default: ['Default'] }
+    // hero, universe 등을 표현하는 두가지 색상 컬러  // 맨 앞의 것이 현재 설정한 것
+    , listIdShape: { type: [String] , default: ['Default'] }
+    , listIdBorder: { type: [String] , default: ['Default'] }
+  }
+  
+  , works: {
+    listIdPlanTeam: [String]
+    , listIdComp: [String]
+    , listIdComment: [String]
+    , listIdVideo: [String] // for Comp-Gallery, Guide (talent, ...)
+  }
+  
+  , likes: {
+    listIdComp: [String]
+    , listIdComment: [String]
+    , listIdVideo: [String] // for Comp-Gallery, Guide (talent, ...)
+  }
+    
     
 }, { collection: 'User_', versionKey: false, strict: false} );
 

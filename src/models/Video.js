@@ -10,9 +10,11 @@ var schemaVideo= new Schema({
   
   , author: String
   
-  , content: String // "link: youtube, twitch"
+  , type: String // "Youtube", "Twitch Clip"
+  , urlContent: String 
+  , idContent: String 
   
-  , listLike: [String] 
+  , listUserLike: [String] 
   
   ,created: Date
   ,updated: Date

@@ -31,9 +31,9 @@ var schemaComp = new Schema({
   
   , listIdComment: [String]  // list of _id (Comment)
   , listIdVideo: [String] // list of _id (Video)
-  , listIdLink: [String] // list of _id (Link)
+  //, listIdLink: [String] // list of _id (Link)
   
-  , listLike: [String] // 마스터들은 별도로 콜랙션 만들기! (like 명단에 자신 배틀태그 공개할 지 설정)
+  , listUserLike: [String] 
   
   , created: Date
   , updated: Date

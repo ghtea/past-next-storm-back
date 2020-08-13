@@ -6,17 +6,59 @@ import PlanTeam from '../models/PlanTeam';
 var router = express.Router();
 
 
-/*
-// GET ALL PlanTeam
+// READ PlanTeam
+router.get('/:idPlanTeam', async (req, res, next) => {
+  
+  try {
+  
+    const filter = { _id: req.params.idPlanTeam };
+    
+    PlanTeam.findOne(filter, (err, planTeam) => {
+      if(err) return res.status(500).json({error: err});
+      else if(!planTeam) { return res.status(404).json({error: 'PlanTeam not found'}); }
+      else { res.json(planTeam); }
+    });
+
+    
+  } catch(error) { next(error) }
+  
+});
+
+
+
+// many
 router.get('/', (req, res) => {
-  PlanTeam.find((err, listPlanTeam) => {
+  
+  
+  const query = req.query;
+    
+  const filterAuthor = (query.author)? 
+    { 
+      "listAuthor": query.author
+    }
+    : {  };
+    
+    
+  const filter={
+    
+    $and : [
+      
+     filterAuthor
+     
+    ]
+    
+  };
+  
+  PlanTeam.find(filter, (err, listPlanTeam) => {
     if (err) return res.status(500).send({
       error: 'database failure'
     });
     res.json(listPlanTeam);
   })
+  
 });
-*/
+
+  
 
 
 // CREATE PlanTeam   항상 배틀태그와 함께 시작함에 주의 or 배틀태그 없이 시작해도?
@@ -29,6 +71,9 @@ router.post('/', async (req, res, next) => {
       { 
         _id: req.body._id
         , password: req.body.password
+        
+        , listAuthor: req.body.listAuthor
+        
         , title: req.body.title
         , option: {
           region: req.body.region
@@ -56,23 +101,6 @@ router.post('/', async (req, res, next) => {
 
 
 
-// READ PlanTeam
-router.get('/:idPlanTeam', async (req, res, next) => {
-  
-  try {
-  
-    const filter = { _id: req.params.idPlanTeam };
-    
-    PlanTeam.findOne(filter, (err, planTeam) => {
-      if(err) return res.status(500).json({error: err});
-      else if(!planTeam) { return res.status(404).json({error: 'PlanTeam not found'}); }
-      else { res.json(planTeam); }
-    });
-
-    
-  } catch(error) { next(error) }
-  
-});
 
 
 

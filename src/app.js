@@ -15,7 +15,6 @@ const PlanTeam = require('./models/PlanTeam');
 const Comp = require('./models/Comp');
 
 const Comment = require('./models/Comment');
-const Link = require('./models/Link');
 
 const { generateToken, checkToken } = require('./works/auth/token');
 
@@ -87,6 +86,12 @@ app.use(cookieParser());
 app.use('/plan-team', require('./routes/plan-team'));
 app.use('/player', require('./routes/player'));
 app.use('/comp', require('./routes/comp'));
+
+app.use('/user', require('./routes/user'));
+
+app.use('/comment', require('./routes/comment'));
+app.use('/video', require('./routes/video'));
+//app.use('/link', require('./routes/link'));
 
 app.use('/hero-basic', require('./routes/hero-basic'));
 app.use('/map', require('./routes/map'));
