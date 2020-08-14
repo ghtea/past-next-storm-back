@@ -84,8 +84,10 @@ app.use(cookieParser());
 //app.use(jwtMiddleware); // auth-local 에서만 사용하기로 하자
 
 app.use('/plan-team', require('./routes/plan-team'));
-app.use('/player', require('./routes/player'));
+app.use('/participant', require('./routes/participant'));
 app.use('/comp', require('./routes/comp'));
+
+app.use('/player', require('./routes/player'));
 
 app.use('/user', require('./routes/user'));
 
