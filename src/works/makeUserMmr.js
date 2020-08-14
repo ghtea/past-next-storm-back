@@ -16,6 +16,8 @@ const getMmrSlOneRegion = async (battletag, idRegion, nameRegion) => {
     let url = `https://api.heroesprofile.com/api/Player/MMR?mode=json&battletag=${urlBattletag}&region=${idRegion}&game_type=Storm%20League&api_token=${process.env.TOKEN_HP}`
     
       
+      
+      
     const response = await axios.get(`${url}`);
     const objPlayerOriginal = response.data;
     

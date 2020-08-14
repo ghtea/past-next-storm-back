@@ -112,4 +112,98 @@ router.post('/update-mmr', async (req, res, next) => {
 
 
 
+
+router.put('/profile/:idUser', async (req, res, next) => {
+  try {
+    
+    const idUser = req.params.idUser;
+    
+    
+    const query = req.query;
+    
+    const shape = query.shape; 
+    const palette = query.palette; 
+    const border = query.border; 
+    
+    
+    const filter = { _id : idUser }
+    
+    let foundUser = {};
+    try {
+      foundUser = await User.findOne(filter);
+    } 
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
+    
+    const listIdShapeBefore = foundUser.profile.listIdShape;
+    const listIdPaletteBefore = foundUser.profile.listIdPalette;
+    const listIdBorderBefore = foundUser.profile.listIdBorder;
+    
+    let listIdShapeNew = listIdShapeBefore.filter(element => element !== shape);
+    listIdShapeNew.unshift(shape);
+    
+    let listIdPaletteNew = listIdPaletteBefore.filter(element => element !== shape);
+    listIdPaletteNew.unshift(palette);
+    
+    let listIdBorderNew = listIdBorderBefore.filter(element => element !== shape);
+    listIdBorderNew.unshift(border);  
+    
+    
+    const update = {
+      
+      profile: {
+        listIdShape: listIdShapeNew
+        , listIdPalette: listIdPaletteNew
+        , listIdBorder: listIdBorderNew
+      }
+      
+    };
+    
+    
+    
+    try {
+      await User.updateOne(filter, update);
+      console.log("successfully updated user's profile");
+    } 
+    catch (error) {
+      console.log(error);
+      res.status(500).send(error); // 여기선 내가 잘 모르는 에러라 뭘 할수가...   나중에 알수없는 에러라고 표시하자...
+      return;
+    }
+    
+    res.send("successfully updated user's profile")
+    
+  } catch(error) {next(error)}
+  
+});
+
+
+
+
+// just get data from heroes profile
+router.get('/player-hero-all/:battletag', async (req, res, next) => {
+  
+  try {
+  
+    const battletag = req.params.battletag;
+    
+    let urlBattletag = encodeURIComponent(battletag);
+    let url = `https://api.heroesprofile.com/api/Player/Hero/All?mode=jso&battletag=${urlBattletag}&region=${idRegion}&game_type=Storm%20League&api_token=${process.env.TOKEN_HP}`
+    
+    // region=1&
+      
+    const response = await axios.get(`${url}`);
+    const objPlayerOriginal = response.data;
+    
+      
+    
+  } catch(error) { next(error) }
+  
+});
+
+
+
 module.exports = router;

@@ -84,7 +84,7 @@ router.post('/', async (req, res, next) => {
     const date =  Date.now();
     
     const compReq = req.body.comp;
-    
+    const listPosition = compReq.listPosition;
     
     const listIdMainHero = listPosition.map(element => element.listIdHero[0]);
 
